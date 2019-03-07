@@ -1,0 +1,69 @@
+using dataCRUD.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace dataCRUD.Controllers
+{
+    public class HomeController : Controller
+    {
+        private MyDatabaseEntities db = new MyDatabaseEntities();
+
+        public ActionResult Display()
+        {
+            Employee e1 = new Employee();
+            return View(e1);
+        }
+        public ActionResult Listt()
+        {
+            return View(db.Employees.ToList());
+        }
+        [HttpPost]
+        public ActionResult Create([Bind(Include ="Id,Name,EmailId,city,country")] Employee e2)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Employees.Add(e2);
+                db.SaveChanges();
+                return RedirectToAction("Listt");
+            }
+ 
+            return View(e2);
+        }
+
+        public ActionResult Edit(int? ID)
+        {
+            // var std = Employee.Where(s => s.id == ID).FirstOrDefault();
+            Employee e1 = db.Employees.Find(ID);
+            return View(e1);
+        }
+        [HttpPost]
+        public ActionResult Edit([Bind(Include = "Id,Name,EmailId,city,country")]Employee e)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(e).State = System.Data.Entity.EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("listt");
+            }
+            return View(e);
+        }
+
+        public ActionResult Delete(int? ID)
+        {
+            // var std = Employee.Where(s => s.id == ID).FirstOrDefault();
+            Employee e1 = db.Employees.Find(ID);
+            return View(e1);
+        }
+        [HttpPost,ActionName("Delete")]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Employee e1 = db.Employees.Find(id);
+            db.Employees.Remove(e1);
+            db.SaveChanges();
+            return RedirectToAction("Listt");
+        }
+    }
+}
